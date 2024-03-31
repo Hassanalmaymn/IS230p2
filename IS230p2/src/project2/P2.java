@@ -33,19 +33,20 @@ public class P2 {
 			} catch (Exception e) {
 				choice = 5;
 			}
-			Statement stmt=null;
+			Statement stmt = null;
 			try {
 				stmt = connection.createStatement();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			};
+			}
+			;
 			switch (choice) {
 			case 1:
 				try {
 					boolean loop = true;
 					while (loop) {
-						
+
 						System.out.print("enter productId :");
 						int productID = input.nextInt();
 						System.out.println();
@@ -91,19 +92,55 @@ public class P2 {
 						System.out.println();
 					}
 
-					stmt.close();
-					connection.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 
 				break;
 			case 3:
+				System.out.print("what is your sales goal :");
+				int goal = input.nextInt();
+				System.out.println();
+				try {
+					ResultSet resultset = null;
+					resultset = stmt.executeQuery("SELECT * FROM PRODUCTS ");
+					while (resultset.next()) {
+						System.out.print(resultset.getInt("productID") + "\t");
+						System.out.print(resultset.getString("name") + "\t");
+						System.out.print(resultset.getInt("price") + "\t");
+						System.out.print(resultset.getInt("sales") + "\t");
+						System.out.println();
+						if (resultset.getInt("sales") >= goal) {
+							double x=resultset.getInt("price")+(resultset.getInt("price")*0.05);
+							String sqlup = "UPDATE PRODUCTS SET"
+									+ "\t price = "+x+" WHERE productID = "+(int) resultset.getInt("productID")+" ;";
+							stmt.executeQuery(sqlup);
+						} else {
+							double x=resultset.getInt("price")-(resultset.getInt("price")*0.1);
+							String sqlup = "UPDATE PRODUCTS SET"
+									+ "\t price = "+x+" WHERE productID = "+(int) resultset.getInt("productID")+" ;";
+							stmt.executeUpdate(sqlup);
+						}
+
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println();
+
 				break;
 			case 4:
 				System.out.println("thank you ");
 				input.close();
+				try {
+					connection.close();
+					stmt.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				System.exit(0);
 				break;
 			default:
